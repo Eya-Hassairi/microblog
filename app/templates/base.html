@@ -63,7 +63,17 @@
           </ul>
         </div>
       </div>
+        <ul>
+            <li><a href="{{ url_for('index') }}">Accueil</a></li>
+            <li><a href="{{ url_for('about') }}">A propos</a></li> <!-- Ajout du lien vers la page "A propos" -->
+        </ul>
+    {% block content %}{% endblock %}
     </nav>
+    <!-- app/templates/base.html -->
+
+    
+
+
     <div class="container mt-3">
       {% with messages = get_flashed_messages() %}
       {% if messages %}
