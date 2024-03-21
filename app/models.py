@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from datetime import datetime, timezone
 from hashlib import md5
 import json
@@ -64,10 +65,26 @@ followers = sa.Table(
               primary_key=True),
     sa.Column('followed_id', sa.Integer, sa.ForeignKey('user.id'),
               primary_key=True)
+=======
+from datetime import datetime
+from hashlib import md5
+from time import time
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+from app import app, db, login
+
+
+followers = db.Table(
+    'followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+>>>>>>> upstream/master
 )
 
 
 class User(UserMixin, db.Model):
+<<<<<<< HEAD
     id: so.Mapped[int] = so.mapped_column(primary_key=True)
     username: so.Mapped[str] = so.mapped_column(sa.String(64), index=True,
                                                 unique=True)
@@ -95,6 +112,20 @@ class User(UserMixin, db.Model):
         foreign_keys='Message.recipient_id', back_populates='recipient')
     notifications: so.WriteOnlyMapped['Notification'] = so.relationship(
         back_populates='user')
+=======
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(64), index=True, unique=True)
+    # email = db.Column(db.String(120), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    about_me = db.Column(db.String(140))
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    followed = db.relationship(
+        'User', secondary=followers,
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+>>>>>>> upstream/master
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -106,6 +137,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def avatar(self, size):
+<<<<<<< HEAD
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f'https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}'
 
@@ -145,15 +177,44 @@ class User(UserMixin, db.Model):
             .group_by(Post)
             .order_by(Post.timestamp.desc())
         )
+=======
+        digest = md5(self.username.lower().encode('utf-8')).hexdigest()
+        # digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
+
+    def follow(self, user):
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self, user):
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
+    def followed_posts(self):
+        followed = Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id)).filter(
+                followers.c.follower_id == self.id)
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
+>>>>>>> upstream/master
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
             {'reset_password': self.id, 'exp': time() + expires_in},
+<<<<<<< HEAD
             current_app.config['SECRET_KEY'], algorithm='HS256')
+=======
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+>>>>>>> upstream/master
 
     @staticmethod
     def verify_reset_password_token(token):
         try:
+<<<<<<< HEAD
             id = jwt.decode(token, current_app.config['SECRET_KEY'],
                             algorithms=['HS256'])['reset_password']
         except Exception:
@@ -173,10 +234,18 @@ class User(UserMixin, db.Model):
         n = Notification(name=name, payload_json=json.dumps(data), user=self)
         db.session.add(n)
         return n
+=======
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
+>>>>>>> upstream/master
 
 
 @login.user_loader
 def load_user(id):
+<<<<<<< HEAD
     return db.session.get(User, int(id))
 
 
@@ -229,3 +298,16 @@ class Notification(db.Model):
 
     def get_data(self):
         return json.loads(str(self.payload_json))
+=======
+    return User.query.get(int(id))
+
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return '<Post {}>'.format(self.body)
+>>>>>>> upstream/master

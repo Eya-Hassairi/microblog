@@ -1,14 +1,30 @@
 {% extends "base.html" %}
+<<<<<<< HEAD
 {% import "bootstrap_wtf.html" as wtf %}
 
 {% block content %}
     <h1>{{ _('Hi, %(username)s!', username=current_user.username) }}</h1>
     {% if form %}
     {{ wtf.quick_form(form) }}
+=======
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+    {% if current_user.is_anonymous %}
+    <h1>Hi!</h1>
+    <p>You're not logged. Maybe you want to <a href="{{ url_for('login') }}">login</a> or <a href="{{ url_for('register') }}">register</a>?</p>
+    {% else %}
+    <h1>Hi, {{ current_user.username }}!</h1>
+    {% endif %}
+    {% if form %}
+    {{ wtf.quick_form(form) }}
+    <br>
+>>>>>>> upstream/master
     {% endif %}
     {% for post in posts %}
         {% include '_post.html' %}
     {% endfor %}
+<<<<<<< HEAD
     <nav aria-label="Post navigation">
         <ul class="pagination">
             <li class="page-item{% if not prev_url %} disabled{% endif %}">
@@ -19,6 +35,18 @@
             <li class="page-item{% if not next_url %} disabled{% endif %}">
                 <a class="page-link" href="{{ next_url }}">
                     {{ _('Older posts') }} <span aria-hidden="true">&rarr;</span>
+=======
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> Newer posts
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Older posts <span aria-hidden="true">&rarr;</span>
+>>>>>>> upstream/master
                 </a>
             </li>
         </ul>

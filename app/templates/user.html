@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 
+<<<<<<< HEAD
 {% block content %}
+=======
+{% block app_content %}
+>>>>>>> upstream/master
     <table class="table table-hover">
         <tr>
             <td width="256px"><img src="{{ user.avatar(256) }}"></td>
             <td>
+<<<<<<< HEAD
                 <h1>{{ _('User') }}: {{ user.username }}</h1>
                 {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
                 {% if user.last_seen %}
@@ -18,10 +23,26 @@
                     <form action="{{ url_for('main.follow', username=user.username) }}" method="post">
                         {{ form.hidden_tag() }}
                         {{ form.submit(value=_('Follow'), class_='btn btn-primary') }}
+=======
+                <h1>User: {{ user.username }}</h1>
+                {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+                {% if user.last_seen %}
+                <p>Last seen on: {{ moment(user.last_seen).format('LLL') }}</p>
+                {% endif %}
+                <p>{{ user.followers.count() }} followers, {{ user.followed.count() }} following.</p>
+                {% if user == current_user %}
+                <p><a href="{{ url_for('edit_profile') }}">Edit your profile</a></p>
+                {% elif not current_user.is_following(user) %}
+                <p>
+                    <form action="{{ url_for('follow', username=user.username) }}" method="post">
+                        {{ form.hidden_tag() }}
+                        {{ form.submit(value='Follow', class_='btn btn-default') }}
+>>>>>>> upstream/master
                     </form>
                 </p>
                 {% else %}
                 <p>
+<<<<<<< HEAD
                     <form action="{{ url_for('main.unfollow', username=user.username) }}" method="post">
                         {{ form.hidden_tag() }}
                         {{ form.submit(value=_('Unfollow'), class_='btn btn-primary') }}
@@ -31,12 +52,21 @@
                 {% if user != current_user %}
                 <p><a href="{{ url_for('main.send_message', recipient=user.username) }}">{{ _('Send private message') }}</a></p>
                 {% endif %}
+=======
+                    <form action="{{ url_for('unfollow', username=user.username) }}" method="post">
+                        {{ form.hidden_tag() }}
+                        {{ form.submit(value='Unfollow', class_='btn btn-default') }}
+                    </form>
+                </p>
+                {% endif %}
+>>>>>>> upstream/master
             </td>
         </tr>
     </table>
     {% for post in posts %}
         {% include '_post.html' %}
     {% endfor %}
+<<<<<<< HEAD
     <nav aria-label="Post navigation">
         <ul class="pagination">
             <li class="page-item{% if not prev_url %} disabled{% endif %}">
@@ -47,6 +77,18 @@
             <li class="page-item{% if not next_url %} disabled{% endif %}">
                 <a class="page-link" href="{{ next_url }}">
                     {{ _('Older posts') }} <span aria-hidden="true">&rarr;</span>
+=======
+    <nav aria-label="...">
+        <ul class="pager">
+            <li class="previous{% if not prev_url %} disabled{% endif %}">
+                <a href="{{ prev_url or '#' }}">
+                    <span aria-hidden="true">&larr;</span> Newer posts
+                </a>
+            </li>
+            <li class="next{% if not next_url %} disabled{% endif %}">
+                <a href="{{ next_url or '#' }}">
+                    Older posts <span aria-hidden="true">&rarr;</span>
+>>>>>>> upstream/master
                 </a>
             </li>
         </ul>
